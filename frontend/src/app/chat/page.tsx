@@ -1,5 +1,5 @@
 "use client";
-import React, { useState } from "react";
+import React, { useState, useRef, useEffect } from "react";
 import DotGrid from "@/components/DotGrid";
 import Link from "next/link";
 import useLenis from "@/lib/uselenis";
@@ -47,20 +47,47 @@ export default function Chat() {
   ]);
   const [inputValue, setInputValue] = useState("");
   const [isLoading, setIsLoading] = useState(false);
+  const messagesEndRef = useRef<HTMLDivElement>(null);
 
-  const handleSend = (e: React.FormEvent) => {
+  const scrollToBottom = () => {
+    messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
+  };
+
+  useEffect(() => {
+    scrollToBottom();
+  }, [messages, isLoading]);
+
+  const handleSend = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!inputValue.trim()) return;
 
-    const newMessages = [...messages, { role: 'user' as const, content: inputValue }];
+    const userMessage = inputValue;
+    const newMessages = [...messages, { role: 'user' as const, content: userMessage }];
     setMessages(newMessages);
     setInputValue("");
     setIsLoading(true);
 
-    setTimeout(() => {
-      setMessages(prev => [...prev, { role: 'bot', content: "I'm processing your request... (Backend integration pending)" }]);
+    try {
+      const response = await fetch('http://127.0.0.1:8000/api/chat', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ question: userMessage }),
+      });
+
+      if (!response.ok) {
+        throw new Error('Network response was not ok');
+      }
+
+      const data = await response.json();
+      setMessages(prev => [...prev, { role: 'bot', content: data.answer }]);
+    } catch (error) {
+      console.error('Error:', error);
+      setMessages(prev => [...prev, { role: 'bot', content: "Sorry, something went wrong. Please try again." }]);
+    } finally {
       setIsLoading(false);
-    }, 2000);
+    }
   };
 
   return (
@@ -88,7 +115,7 @@ export default function Chat() {
 
       <main style={{ position: 'relative', zIndex: 10, paddingTop: '170px', minHeight: '100vh', display: 'flex', justifyContent: 'center', width: '100%' }}>
         <div style={{ 
-          width: '100%', 
+          width: 'calc(100% - 40px)', 
           maxWidth: '800px', 
           height: '70vh', 
           backgroundColor: 'transparent',
@@ -101,9 +128,12 @@ export default function Chat() {
           margin: '0 20px',
           boxShadow: '0 10px 40px rgba(0,0,0,0.5)'
         }}>
-          <div style={{ flex: 1, overflowY: 'auto', padding: '20px', display: 'flex', flexDirection: 'column', gap: '15px' }}>
+          <div 
+            data-lenis-prevent
+            style={{ flex: 1, overflowY: 'auto', padding: '20px', display: 'flex', flexDirection: 'column', gap: '15px' }}
+          >
             {messages.map((msg, index) => (
-              <div key={index} style={{ 
+              <div key={index} className="body-text" style={{ 
                 alignSelf: msg.role === 'user' ? 'flex-end' : 'flex-start',
                 maxWidth: '80%',
                 padding: '12px 16px',
@@ -135,6 +165,7 @@ export default function Chat() {
                 <div style={{ width: '8px', height: '8px', backgroundColor: '#fff', borderRadius: '50%', animation: 'bounce 1.4s infinite ease-in-out both' }}></div>
               </div>
             )}
+            <div ref={messagesEndRef} />
           </div>
 
           <form onSubmit={handleSend} style={{ 
@@ -146,11 +177,13 @@ export default function Chat() {
           }}>
             <input 
               type="text" 
+              className="body-text"
               value={inputValue}
               onChange={(e) => setInputValue(e.target.value)}
               placeholder="Type your message..."
               style={{
                 flex: 1,
+                minWidth: 0,
                 padding: '12px 16px',
                 borderRadius: '8px',
                 border: '1px solid rgba(255, 255, 255, 0.2)',
@@ -160,6 +193,30 @@ export default function Chat() {
                 fontSize: '1rem'
               }}
             />
+            <button
+              type="button"
+              onClick={() => console.log("Voice input clicked")}
+              style={{
+                padding: '12px',
+                borderRadius: '8px',
+                border: '1px solid rgba(255, 255, 255, 0.2)',
+                backgroundColor: 'rgba(255, 255, 255, 0.05)',
+                color: '#fff',
+                cursor: 'pointer',
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'center',
+                transition: 'background-color 0.2s'
+              }}
+              title="Voice Input"
+            >
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                <path d="M12 1a3 3 0 0 0-3 3v8a3 3 0 0 0 6 0V4a3 3 0 0 0-3-3z" />
+                <path d="M19 10v2a7 7 0 0 1-14 0v-2" />
+                <line x1="12" y1="19" x2="12" y2="23" />
+                <line x1="8" y1="23" x2="16" y2="23" />
+              </svg>
+            </button>
             <button 
               type="submit"
               style={{
@@ -189,6 +246,7 @@ export default function Chat() {
           position: 'relative',
           zIndex: 10
         }}
+        className="body-text"
       >
         &copy; {new Date().getFullYear()} AURA. All rights reserved.
       </footer>

@@ -144,10 +144,10 @@ export default function Home() {
             position: 'relative', 
             boxShadow: '0 0 30px rgba(82, 39, 255, 0.2)' 
           }}>
-            <Image src="/me.png" alt="ard.dev" fill style={{ objectFit: 'cover' }} />
+            <Image src="/me.png" alt="ard.dev" fill style={{ objectFit: 'cover' }} className="pointers-event-none" />
           </div>
-          <h3 style={{ color: '#fff', fontSize: '1.5rem', fontWeight: 600, letterSpacing: '1px' }}>ard.dev</h3>
-          <p className="text-white/60 text-sm">Full-Stack Dev | Web3 | Blockchain </p>
+          <h3 style={{ color: '#fff', fontSize: '1.5rem', fontWeight: 600, letterSpacing: '1px' }} className="body-text">ard.dev</h3>
+          <p className="text-white/60 text-sm body-text">Full-Stack Dev | Web3 | Blockchain </p>
           <div style={{ display: 'flex', gap: '20px', marginTop: '20px' }}>
             <SocialLink href="#" ariaLabel="GitHub">
               <svg width="24" height="24" viewBox="0 0 24 24" fill="currentColor" xmlns="http://www.w3.org/2000/svg">
@@ -178,6 +178,7 @@ export default function Home() {
           position: 'relative',
           zIndex: 10
         }}
+        className="body-text"
       >
         &copy; {new Date().getFullYear()} AURA. All rights reserved.
       </footer>
