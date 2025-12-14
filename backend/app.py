@@ -4,7 +4,9 @@ from fastapi import FastAPI, HTTPException
 from fastapi.middleware.cors import CORSMiddleware
 from pydantic import BaseModel
 from dotenv import load_dotenv
+from database import init_db
 
+from auth.routes import router as auth_router
 from langchain_openai import OpenAIEmbeddings, ChatOpenAI
 from langchain_chroma import Chroma
 from langchain_classic.chains import RetrievalQA
@@ -18,6 +20,10 @@ if not OPENAI_API_KEY:
     raise RuntimeError("OPENAI_API_KEY not set in environment (.env)")
 
 app = FastAPI(title="College FAQ RAG Backend")
+
+init_db()
+
+app.include_router(auth_router)
 
 app.add_middleware(
     CORSMiddleware,
@@ -48,6 +54,11 @@ retriever = db.as_retriever(search_kwargs={"k": 3})
 llm = ChatOpenAI(temperature=0.1, model="gpt-4o-mini")
 
 qa_chain = RetrievalQA.from_chain_type(llm=llm, retriever=retriever, chain_type="stuff")
+
+
+@app.get("/")
+def root():
+    return {"status": "AURA backend running"}
 
 
 class Query(BaseModel):

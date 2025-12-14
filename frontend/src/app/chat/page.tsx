@@ -47,11 +47,20 @@ export default function Chat() {
   ]);
   const [inputValue, setInputValue] = useState("");
   const [isLoading, setIsLoading] = useState(false);
+  const [showLoginPrompt, setShowLoginPrompt] = useState(false);
   const messagesEndRef = useRef<HTMLDivElement>(null);
 
   const scrollToBottom = () => {
     messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
   };
+
+  useEffect(() => {
+    const token = localStorage.getItem('token');
+    if (!token) {
+        const timer = setTimeout(() => setShowLoginPrompt(true), 1500);
+        return () => clearTimeout(timer);
+    }
+  }, []);
 
   useEffect(() => {
     scrollToBottom();
@@ -92,12 +101,98 @@ export default function Chat() {
 
   return (
     <div style={{ width: '100%', minHeight: '100vh', position: 'relative', backgroundColor: '#000000' }}>
-      <style>{`
-        @keyframes bounce {
-          0%, 80%, 100% { transform: scale(0); }
-          40% { transform: scale(1); }
-        }
-      `}</style>
+      {showLoginPrompt && (
+        <div style={{
+          position: 'fixed',
+          inset: 0,
+          backgroundColor: 'rgba(0,0,0,0.7)',
+          zIndex: 100,
+          display: 'flex',
+          alignItems: 'center',
+          justifyContent: 'center',
+          backdropFilter: 'blur(8px)',
+          animation: 'fadeIn 0.3s ease'
+        }}>
+          <div style={{
+            backgroundColor: '#000',
+            border: '1px solid rgba(82, 39, 255, 0.5)',
+            padding: '40px',
+            borderRadius: '24px',
+            maxWidth: '450px',
+            width: '90%',
+            textAlign: 'center',
+            boxShadow: '0 0 50px rgba(82, 39, 255, 0.2)',
+            position: 'relative'
+          }}>
+            <button 
+                onClick={() => setShowLoginPrompt(false)}
+                style={{
+                    position: 'absolute',
+                    top: '15px',
+                    right: '15px',
+                    background: 'none',
+                    border: 'none',
+                    color: 'rgba(255,255,255,0.5)',
+                    cursor: 'pointer',
+                    padding: '5px'
+                }}
+            >
+                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                    <line x1="18" y1="6" x2="6" y2="18"></line>
+                    <line x1="6" y1="6" x2="18" y2="18"></line>
+                </svg>
+            </button>
+            <div style={{ marginBottom: '20px', display: 'flex', justifyContent: 'center' }}>
+                <div style={{ width: '60px', height: '60px', borderRadius: '50%', background: 'rgba(82, 39, 255, 0.1)', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+                    <svg width="30" height="30" viewBox="0 0 24 24" fill="none" stroke="#5227FF" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                        <path d="M16 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"></path>
+                        <circle cx="8.5" cy="7" r="4"></circle>
+                        <line x1="20" y1="8" x2="20" y2="14"></line>
+                        <line x1="23" y1="11" x2="17" y2="11"></line>
+                    </svg>
+                </div>
+            </div>
+            <h3 className="heading" style={{ color: 'white', marginBottom: '12px', fontSize: '1.8rem' }}>Unlock Full Experience</h3>
+            <p className="body-text" style={{ color: 'rgba(255,255,255,0.7)', marginBottom: '30px', lineHeight: '1.6', fontSize: '1rem' }}>
+              Login to AURA to automatically save your chat history, access personalized data, and pick up where you left off.
+            </p>
+            <div style={{ display: 'flex', gap: '15px', flexDirection: 'column' }}>
+              <Link href="/login" style={{
+                padding: '14px 24px',
+                background: 'linear-gradient(90deg, #5227FF 0%, #8A5CFF 100%)',
+                color: 'white',
+                borderRadius: '12px',
+                textDecoration: 'none',
+                fontWeight: 600,
+                fontSize: '1rem',
+                display: 'block',
+                width: '100%',
+                boxSizing: 'border-box'
+              }}>
+                Login / Signup
+              </Link>
+              <button 
+                onClick={() => setShowLoginPrompt(false)}
+                className="body-text"
+                style={{
+                  padding: '14px 24px',
+                  background: 'rgba(255,255,255,0.05)',
+                  border: '1px solid rgba(255,255,255,0.1)',
+                  color: 'rgba(255,255,255,0.8)',
+                  borderRadius: '12px',
+                  cursor: 'pointer',
+                  fontSize: '1rem',
+                  fontWeight: 500,
+                  width: '100%'
+                }}
+              >
+                Continue as Guest
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+
       <div style={{ position: 'fixed', inset: 0, width: '100%', height: '100%', zIndex: 0 }}>
         <DotGrid
           dotSize={5}
@@ -262,6 +357,7 @@ export default function Chat() {
           zIndex: 50,
         }}
       >
+        <Link href="/" aria-label="Home">
         <h1
           className="heading text-white"
           style={{
@@ -278,6 +374,7 @@ export default function Chat() {
         >
           AURA
         </h1>
+        </Link>
         <nav
           aria-label="Primary"
           className="desktop-nav body-text"

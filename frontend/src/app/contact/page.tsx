@@ -312,6 +312,7 @@ export default function Chat() {
           zIndex: 50,
         }}
       >
+        <Link href="/" aria-label="Home">
         <h1
           className="heading text-white"
           style={{
@@ -327,6 +328,7 @@ export default function Chat() {
         >
           AURA
         </h1>
+        </Link>
         <nav
           aria-label="Primary"
           className="desktop-nav body-text"

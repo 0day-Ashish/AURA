@@ -66,6 +66,27 @@ const SocialLink = ({ href, ariaLabel, children }: { href: string; ariaLabel: st
 export default function Home() {
   useLenis({ lerp: 0.07 });
   const [mobileOpen, setMobileOpen] = useState(false);
+  const [user, setUser] = useState<{name: string, email: string} | null>(null);
+  const [showProfileMenu, setShowProfileMenu] = useState(false);
+
+  React.useEffect(() => {
+    const token = localStorage.getItem('token');
+    const userStr = localStorage.getItem('user');
+    if (token && userStr) {
+      try {
+        setUser(JSON.parse(userStr));
+      } catch (e) {
+        console.error("Failed to parse user", e);
+      }
+    }
+  }, []);
+
+  const handleLogout = () => {
+    localStorage.removeItem('token');
+    localStorage.removeItem('user');
+    setUser(null);
+    setShowProfileMenu(false);
+  };
 
   return (
     <div style={{ width: '100%', minHeight: '100vh', position: 'relative', backgroundColor: '#000000' }}>
@@ -194,6 +215,7 @@ export default function Home() {
           zIndex: 50,
         }}
       >
+        <Link href="/" aria-label="Home">
         <h1
           className="heading text-white"
           style={{
@@ -209,6 +231,7 @@ export default function Home() {
         >
           AURA
         </h1>
+        </Link>
         <nav
           aria-label="Primary"
           className="desktop-nav body-text"
@@ -258,6 +281,100 @@ export default function Home() {
           }}
         />
       </header>
+
+      <div style={{
+        position: 'fixed',
+        top: `calc(24px + clamp(2.5rem, 6vw, 5rem) + 22px + 4px + 15px)`,
+        right: '34px',
+        zIndex: 45,
+      }}>
+        {user ? (
+          <div style={{ position: 'relative' }}>
+            <button 
+              onClick={() => setShowProfileMenu(!showProfileMenu)}
+              style={{
+                background: 'rgba(0,0,0,0.6)',
+                border: '1px solid rgba(82, 39, 255, 0.4)',
+                borderRadius: '50%',
+                width: '40px',
+                height: '40px',
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'center',
+                cursor: 'pointer',
+                color: 'white',
+                backdropFilter: 'blur(4px)',
+              }}
+            >
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path>
+                <circle cx="12" cy="7" r="4"></circle>
+              </svg>
+            </button>
+            {showProfileMenu && (
+              <div style={{
+                position: 'absolute',
+                top: '100%',
+                right: 0,
+                marginTop: '10px',
+                backgroundColor: '#000',
+                border: '1px solid rgba(82, 39, 255, 0.4)',
+                borderRadius: '12px',
+                padding: '16px',
+                minWidth: '200px',
+                boxShadow: '0 4px 20px rgba(0,0,0,0.5)',
+                display: 'flex',
+                flexDirection: 'column',
+                gap: '12px'
+              }}>
+                <div>
+                  <div style={{ color: 'white', fontWeight: 600, fontSize: '0.9rem' }}>{user.name}</div>
+                  <div style={{ color: 'rgba(255,255,255,0.6)', fontSize: '0.8rem' }}>{user.email}</div>
+                </div>
+                <div style={{ height: '1px', backgroundColor: 'rgba(255,255,255,0.1)' }} />
+                <button
+                  onClick={handleLogout}
+                  style={{
+                    background: 'transparent',
+                    border: 'none',
+                    color: '#ff4444',
+                    textAlign: 'left',
+                    cursor: 'pointer',
+                    fontSize: '0.9rem',
+                    padding: 0,
+                    display: 'flex',
+                    alignItems: 'center',
+                    gap: '8px'
+                  }}
+                >
+                  <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                    <path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"></path>
+                    <polyline points="16 17 21 12 16 7"></polyline>
+                    <line x1="21" y1="12" x2="9" y2="12"></line>
+                  </svg>
+                  Logout
+                </button>
+              </div>
+            )}
+          </div>
+        ) : (
+          <Link href="/login" style={{
+            display: 'inline-block',
+            padding: '8px 20px',
+            background: 'rgba(0,0,0,0.6)',
+            border: '1px solid rgba(82, 39, 255, 0.4)',
+            borderRadius: '20px',
+            color: 'white',
+            textDecoration: 'none',
+            fontSize: '0.9rem',
+            fontWeight: 600,
+            backdropFilter: 'blur(4px)',
+            transition: 'all 0.3s ease',
+          }} className="body-text">
+            Login / Signup
+          </Link>
+        )}
+      </div>
       
       {mobileOpen && (
           <div id="mobile-menu" className="mobile-menu body-text" role="menu" aria-label="Mobile primary" 

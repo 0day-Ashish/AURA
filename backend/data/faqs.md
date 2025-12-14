@@ -5,8 +5,8 @@ A: The annual tuition fee for B.Tech is ₹90,000 per year. Scholarships may app
 Q: When is the fee payment deadline?
 A: Fees for each semester are due within 30 days of the semester start date; late fees may apply.
 
-# Admissions
-Q: How do I apply for undergraduate admission?
+# AdmissionsHow do I apply for undergraduate admission?
+Q: 
 A: Apply through the college portal; upload transcripts, entrance score, and ID proof.
 
 # Courses
