@@ -33,7 +33,7 @@ export default function PasswordResetPage() {
     setLoading(true);
 
     try {
-      const response = await fetch("http://localhost:8000/auth/request-password-reset", {
+      const response = await fetch("https://aura-ceoi.onrender.com/auth/request-password-reset", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ email }),
@@ -61,7 +61,7 @@ export default function PasswordResetPage() {
     setLoading(true);
 
     try {
-      const response = await fetch("http://localhost:8000/auth/verify-otp", {
+      const response = await fetch("https://aura-ceoi.onrender.com/auth/verify-otp", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ email, otp }),
@@ -90,7 +90,7 @@ export default function PasswordResetPage() {
     setLoading(true);
 
     try {
-      const response = await fetch("http://localhost:8000/auth/reset-password", {
+      const response = await fetch("https://aura-ceoi.onrender.com/auth/reset-password", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ 

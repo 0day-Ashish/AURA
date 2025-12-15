@@ -60,7 +60,7 @@ export default function Chat() {
         const timer = setTimeout(() => setShowLoginPrompt(true), 1500);
         return () => clearTimeout(timer);
     } else {
-      fetch('http://127.0.0.1:8000/api/chat/history', {
+      fetch('https://aura-ceoi.onrender.com/api/chat/history', {
         headers: {
           'Authorization': `Bearer ${token}`
         }
@@ -109,7 +109,7 @@ export default function Chat() {
     }
 
     try {
-      const response = await fetch('http://127.0.0.1:8000/api/chat', {
+      const response = await fetch('https://aura-ceoi.onrender.com/api/chat', {
         method: 'POST',
         headers: headers,
         body: JSON.stringify({ question: userMessage }),
