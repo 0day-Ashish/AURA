@@ -59,6 +59,29 @@ export default function Chat() {
     if (!token) {
         const timer = setTimeout(() => setShowLoginPrompt(true), 1500);
         return () => clearTimeout(timer);
+    } else {
+      fetch('http://127.0.0.1:8000/api/chat/history', {
+        headers: {
+          'Authorization': `Bearer ${token}`
+        }
+      })
+      .then(res => {
+        if (res.ok) return res.json();
+        throw new Error('Failed to fetch history');
+      })
+      .then(data => {
+        if (Array.isArray(data) && data.length > 0) {
+          const history = data.map((msg: any) => ({
+            role: (msg.role === 'assistant' ? 'bot' : 'user') as 'user' | 'bot',
+            content: msg.message
+          }));
+          setMessages([
+            { role: 'bot', content: 'Hello! I am AURA. How can I assist you today?' },
+            ...history
+          ]);
+        }
+      })
+      .catch(err => console.error('Error fetching history:', err));
     }
   }, []);
 
@@ -76,12 +99,19 @@ export default function Chat() {
     setInputValue("");
     setIsLoading(true);
 
+    const token = localStorage.getItem('token');
+    
+    const headers: Record<string, string> = {
+      'Content-Type': 'application/json',
+    };
+    if (token) {
+      headers['Authorization'] = `Bearer ${token}`;
+    }
+
     try {
       const response = await fetch('http://127.0.0.1:8000/api/chat', {
         method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
+        headers: headers,
         body: JSON.stringify({ question: userMessage }),
       });
 

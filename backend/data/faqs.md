@@ -21,3 +21,6 @@ A: Dr. S. Mukherjee is the current HOD of Computer Science.
 Q: How to contact the admissions office?
 A: Email admissions@college.edu or call +91-12345-67890 (Mon-Fri, 10am-5pm).
 
+
+
+

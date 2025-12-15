@@ -1,11 +1,13 @@
 import os
 import logging
+import models
 from fastapi import FastAPI, HTTPException
 from fastapi.middleware.cors import CORSMiddleware
 from pydantic import BaseModel
 from dotenv import load_dotenv
 from database import init_db
 
+from chat.routes import router as chat_router
 from auth.routes import router as auth_router
 from langchain_openai import OpenAIEmbeddings, ChatOpenAI
 from langchain_chroma import Chroma
@@ -24,6 +26,7 @@ app = FastAPI(title="College FAQ RAG Backend")
 init_db()
 
 app.include_router(auth_router)
+app.include_router(chat_router)
 
 app.add_middleware(
     CORSMiddleware,
@@ -80,3 +83,4 @@ async def chat(req: Query):
         logger.exception("RAG chain failed")
         raise HTTPException(status_code=500, detail=f"RAG error: {e}")
     return {"answer": answer}
+
