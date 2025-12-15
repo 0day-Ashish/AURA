@@ -59,7 +59,7 @@ Follow these steps to download and run AURA on your local machine.
    **Frontend**
    ```bash
    npm run dev 
-    ```
+   ```
 
 
 
